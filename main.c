@@ -1,6 +1,6 @@
 #include "main.h"
-extern char **environ;
 
+extern char **environ;
 
 /**
  * main - Entry point for the simple shell
@@ -21,7 +21,8 @@ int main(int ac, char **av)
 
 	while (1)
 	{
-		printf("$ ");
+		if (isatty(STDIN_FILENO))
+			printf("$ ");
 		if (getline(&line, &len, stdin) == -1)
 			break;
 		len_line = strlen(line);
