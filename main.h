@@ -11,4 +11,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+
+char *trim_line(char *line);
 #endif

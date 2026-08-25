@@ -3,6 +3,31 @@
 extern char **environ;
 
 /**
+ * trim_line - Removes leading and trailing spaces/tabs from a string
+ * @line: The string to trim (modified in place)
+ *
+ * Return: Pointer to the start of the trimmed string
+ */
+char *trim_line(char *line)
+{
+	char *start = line;
+	char *end;
+
+	while (*start == ' ' || *start == '\t')
+		start++;
+
+	if (*start == '\0')
+		return (start);
+
+	end = start + strlen(start) - 1;
+	while (end > start && (*end == ' ' || *end == '\t'))
+		end--;
+	*(end + 1) = '\0';
+
+	return (start);
+}
+
+/**
  * main - Entry point for the simple shell
  * @ac: Argument count
  * @av: Argument vector
@@ -12,6 +37,7 @@ extern char **environ;
 int main(int ac, char **av)
 {
 	char *line = NULL;
+	char *trimmed;
 	size_t len = 0;
 	size_t len_line;
 	char *args[2];
@@ -25,13 +51,18 @@ int main(int ac, char **av)
 			printf("$ ");
 		if (getline(&line, &len, stdin) == -1)
 			break;
+
 		len_line = strlen(line);
 		if (len_line > 0 && line[len_line - 1] == '\n')
 			line[len_line - 1] = '\0';
-		if (line[0] == '\0')
+
+		trimmed = trim_line(line);
+		if (trimmed[0] == '\0')
 			continue;
-		args[0] = line;
+
+		args[0] = trimmed;
 		args[1] = NULL;
+
 		child_pid = fork();
 		if (child_pid == 0)
 		{
@@ -46,6 +77,7 @@ int main(int ac, char **av)
 			wait(NULL);
 		}
 	}
+
 	free(line);
 	return (0);
 }
