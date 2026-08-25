@@ -1,9 +1,9 @@
 #include "main.h"
 
-extern char **environ;
+
 
 /**
- * tokenize_line - Splits a line into an array of arguments by spaces/tabs
+ * tokenize_line - Splits a line into an array of arguments by spaces/tabs/newlines
  * @line: The input line to split (will be modified by strtok)
  * @args: Array to store the resulting argument pointers
  *
@@ -14,12 +14,12 @@ int tokenize_line(char *line, char *args[])
 	int i = 0;
 	char *token;
 
-	token = strtok(line, " \t");
+	token = strtok(line, " \t\n");
 	while (token != NULL && i < MAX_ARGS - 1)
 	{
 		args[i] = token;
 		i++;
-		token = strtok(NULL, " \t");
+		token = strtok(NULL, " \t\n");
 	}
 	args[i] = NULL;
 
@@ -37,7 +37,6 @@ int main(int ac, char **av)
 {
 	char *line = NULL;
 	size_t len = 0;
-	size_t len_line;
 	char *args[MAX_ARGS];
 	pid_t child_pid;
 	int token_count;
@@ -50,10 +49,6 @@ int main(int ac, char **av)
 			printf("$ ");
 		if (getline(&line, &len, stdin) == -1)
 			break;
-
-		len_line = strlen(line);
-		if (len_line > 0 && line[len_line - 1] == '\n')
-			line[len_line - 1] = '\0';
 
 		token_count = tokenize_line(line, args);
 		if (token_count == 0)

@@ -14,6 +14,8 @@
 #include <sys/wait.h>
 
 /* Function prototypes */
+extern char **environ;
 char *trim_line(char *line);
+int tokenize_line(char *line, char *args[]);
 
 #endif /* MAIN_H */
