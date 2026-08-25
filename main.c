@@ -3,28 +3,27 @@
 extern char **environ;
 
 /**
- * trim_line - Removes leading and trailing spaces/tabs from a string
- * @line: The string to trim (modified in place)
+ * tokenize_line - Splits a line into an array of arguments by spaces/tabs
+ * @line: The input line to split (will be modified by strtok)
+ * @args: Array to store the resulting argument pointers
  *
- * Return: Pointer to the start of the trimmed string
+ * Return: Number of tokens found
  */
-char *trim_line(char *line)
+int tokenize_line(char *line, char *args[])
 {
-	char *start = line;
-	char *end;
+	int i = 0;
+	char *token;
 
-	while (*start == ' ' || *start == '\t')
-		start++;
+	token = strtok(line, " \t");
+	while (token != NULL && i < MAX_ARGS - 1)
+	{
+		args[i] = token;
+		i++;
+		token = strtok(NULL, " \t");
+	}
+	args[i] = NULL;
 
-	if (*start == '\0')
-		return (start);
-
-	end = start + strlen(start) - 1;
-	while (end > start && (*end == ' ' || *end == '\t'))
-		end--;
-	*(end + 1) = '\0';
-
-	return (start);
+	return (i);
 }
 
 /**
@@ -37,11 +36,11 @@ char *trim_line(char *line)
 int main(int ac, char **av)
 {
 	char *line = NULL;
-	char *trimmed;
 	size_t len = 0;
 	size_t len_line;
-	char *args[2];
+	char *args[MAX_ARGS];
 	pid_t child_pid;
+	int token_count;
 
 	(void)ac;
 
@@ -56,12 +55,9 @@ int main(int ac, char **av)
 		if (len_line > 0 && line[len_line - 1] == '\n')
 			line[len_line - 1] = '\0';
 
-		trimmed = trim_line(line);
-		if (trimmed[0] == '\0')
+		token_count = tokenize_line(line, args);
+		if (token_count == 0)
 			continue;
-
-		args[0] = trimmed;
-		args[1] = NULL;
 
 		child_pid = fork();
 		if (child_pid == 0)
