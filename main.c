@@ -1,6 +1,48 @@
 #include "main.h"
 
+/**
+ * find_path - Searches PATH directories for an executable command
+ * @command: The command name to search for (e.g. "ls")
+ *
+ * Return: Full path if found (malloc'd), NULL if not found
+ */
+char *find_path(char *command)
+{
+	char *path_value = getenv("PATH");
+	char *path_copy;
+	char *dir;
+	char full_path[1024];
+	char *result;
+	size_t path_len;
 
+	if (path_value == NULL)
+		return (NULL);
+
+	path_len = strlen(path_value);
+	path_copy = malloc(path_len + 1);
+	if (path_copy == NULL)
+		exit(EXIT_FAILURE);
+	strcpy(path_copy, path_value);
+
+	dir = strtok(path_copy, ":");
+	while (dir != NULL)
+	{
+		sprintf(full_path, "%s/%s", dir, command);
+		if (access(full_path, X_OK) == 0)
+		{
+			result = malloc(strlen(full_path) + 1);
+			if (result == NULL)
+				exit(EXIT_FAILURE);
+			strcpy(result, full_path);
+			free(path_copy);
+			return (result);
+		}
+		dir = strtok(NULL, ":");
+	}
+
+	free(path_copy);
+	return (NULL);
+}
 
 /**
  * tokenize_line - Splits a line into an array of arguments by spaces/tabs/newlines
@@ -40,6 +82,7 @@ int main(int ac, char **av)
 	char *args[MAX_ARGS];
 	pid_t child_pid;
 	int token_count;
+	char *cmd_path;
 
 	(void)ac;
 
@@ -54,10 +97,17 @@ int main(int ac, char **av)
 		if (token_count == 0)
 			continue;
 
+		cmd_path = find_path(args[0]);
+		if (cmd_path == NULL)
+		{
+			fprintf(stderr, "%s: command not found\n", args[0]);
+			continue;
+		}
+
 		child_pid = fork();
 		if (child_pid == 0)
 		{
-			if (execve(args[0], args, environ) == -1)
+			if (execve(cmd_path, args, environ) == -1)
 			{
 				perror(av[0]);
 				exit(EXIT_FAILURE);
@@ -67,6 +117,7 @@ int main(int ac, char **av)
 		{
 			wait(NULL);
 		}
+		free(cmd_path);
 	}
 
 	free(line);

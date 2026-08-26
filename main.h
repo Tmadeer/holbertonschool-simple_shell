@@ -15,7 +15,7 @@
 
 /* Function prototypes */
 extern char **environ;
-char *trim_line(char *line);
 int tokenize_line(char *line, char *args[]);
+char *find_path(char *command);
 
 #endif /* MAIN_H */
