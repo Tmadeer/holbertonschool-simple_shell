@@ -114,7 +114,7 @@ int tokenize_line(char *line, char *args[])
  * @ac: Argument count
  * @av: Argument vector
  *
- * Return: Always 0 on success
+ * Return: Exit status of last command, or 127 if command not found
  */
 int main(int ac, char **av)
 {
@@ -124,6 +124,8 @@ int main(int ac, char **av)
 	pid_t child_pid;
 	int token_count;
 	char *cmd_path;
+	int line_number = 0;
+	int exit_status = 0;
 
 	(void)ac;
 
@@ -134,6 +136,8 @@ int main(int ac, char **av)
 		if (getline(&line, &len, stdin) == -1)
 			break;
 
+		line_number++;
+
 		token_count = tokenize_line(line, args);
 		if (token_count == 0)
 			continue;
@@ -141,7 +145,8 @@ int main(int ac, char **av)
 		cmd_path = resolve_command(args[0]);
 		if (cmd_path == NULL)
 		{
-			fprintf(stderr, "%s: command not found\n", args[0]);
+			fprintf(stderr, "%s: %d: %s: not found\n", av[0], line_number, args[0]);
+			exit_status = 127;
 			continue;
 		}
 
@@ -156,11 +161,12 @@ int main(int ac, char **av)
 		}
 		else
 		{
-			wait(NULL);
+			wait(&exit_status);
+			exit_status = WEXITSTATUS(exit_status);
 		}
 		free(cmd_path);
 	}
 
 	free(line);
-	return (0);
+	return (exit_status);
 }
