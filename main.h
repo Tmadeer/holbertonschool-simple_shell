@@ -20,5 +20,6 @@ char *get_path(void);
 char *find_path(char *command);
 char *resolve_command(char *command);
 int handle_builtin(char *args[], char *line, int *exit_status);
+int print_env(void);
 
 #endif /* MAIN_H */
