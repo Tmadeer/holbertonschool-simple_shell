@@ -1,5 +1,4 @@
 #include "main.h"
-
 /**
  * get_path - Retrieves the value of PATH from environ
  *
@@ -8,7 +7,6 @@
 char *get_path(void)
 {
 	int i;
-
 	for (i = 0; environ[i] != NULL; i++)
 	{
 		if (strncmp(environ[i], "PATH=", 5) == 0)
@@ -16,7 +14,6 @@ char *get_path(void)
 	}
 	return (NULL);
 }
-
 /**
  * find_path - Searches PATH directories for an executable command
  * @command: The command name to search for (e.g. "ls")
@@ -31,17 +28,14 @@ char *find_path(char *command)
 	char full_path[1024];
 	char *result;
 	size_t path_len;
-
 	path_value = get_path();
 	if (path_value == NULL)
 		return (NULL);
-
 	path_len = strlen(path_value);
 	path_copy = malloc(path_len + 1);
 	if (path_copy == NULL)
 		exit(EXIT_FAILURE);
 	strcpy(path_copy, path_value);
-
 	for (dir = strtok(path_copy, ":"); dir != NULL; dir = strtok(NULL, ":"))
 	{
 		sprintf(full_path, "%s/%s", dir, command);
@@ -55,11 +49,9 @@ char *find_path(char *command)
 			return (result);
 		}
 	}
-
 	free(path_copy);
 	return (NULL);
 }
-
 /**
  * resolve_command - Determines the full path to execute for a command
  * @command: The command as typed by the user (e.g. "ls" or "./hbtn_ls")
@@ -69,7 +61,6 @@ char *find_path(char *command)
 char *resolve_command(char *command)
 {
 	char *result;
-
 	if (strchr(command, '/') != NULL)
 	{
 		if (access(command, X_OK) == 0)
@@ -84,9 +75,8 @@ char *resolve_command(char *command)
 	}
 	return (find_path(command));
 }
-
 /**
- * tokenize_line - Splits a line into an array of arguments by spaces/tabs/newlines
+ * tokenize_line - Splits a line into an array of arguments by whitespace
  * @line: The input line to split (will be modified by strtok)
  * @args: Array to store the resulting argument pointers
  *
@@ -96,7 +86,6 @@ int tokenize_line(char *line, char *args[])
 {
 	int i = 0;
 	char *token;
-
 	token = strtok(line, " \t\n");
 	while (token != NULL && i < MAX_ARGS - 1)
 	{
@@ -105,10 +94,8 @@ int tokenize_line(char *line, char *args[])
 		token = strtok(NULL, " \t\n");
 	}
 	args[i] = NULL;
-
 	return (i);
 }
-
 /**
  * main - Entry point for the simple shell
  * @ac: Argument count
@@ -126,22 +113,19 @@ int main(int ac, char **av)
 	char *cmd_path;
 	int line_number = 0;
 	int exit_status = 0;
-
 	(void)ac;
-
 	while (1)
 	{
 		if (isatty(STDIN_FILENO))
 			printf("$ ");
 		if (getline(&line, &len, stdin) == -1)
 			break;
-
 		line_number++;
-
 		token_count = tokenize_line(line, args);
 		if (token_count == 0)
 			continue;
-
+		if (handle_builtin(args, line, &exit_status))
+			continue;
 		cmd_path = resolve_command(args[0]);
 		if (cmd_path == NULL)
 		{
@@ -149,7 +133,6 @@ int main(int ac, char **av)
 			exit_status = 127;
 			continue;
 		}
-
 		child_pid = fork();
 		if (child_pid == 0)
 		{
@@ -166,7 +149,7 @@ int main(int ac, char **av)
 		}
 		free(cmd_path);
 	}
-
 	free(line);
 	return (exit_status);
 }
+

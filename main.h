@@ -19,5 +19,6 @@ int tokenize_line(char *line, char *args[]);
 char *get_path(void);
 char *find_path(char *command);
 char *resolve_command(char *command);
+int handle_builtin(char *args[], char *line, int *exit_status);
 
 #endif /* MAIN_H */
