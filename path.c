@@ -1,4 +1,5 @@
 #include "main.h"
+
 /**
  * get_path - Retrieves the value of PATH from environ
  *
@@ -7,6 +8,7 @@
 char *get_path(void)
 {
 	int i;
+
 	for (i = 0; environ[i] != NULL; i++)
 	{
 		if (strncmp(environ[i], "PATH=", 5) == 0)
@@ -14,6 +16,7 @@ char *get_path(void)
 	}
 	return (NULL);
 }
+
 /**
  * find_path - Searches PATH directories for an executable command
  * @command: The command name to search for (e.g. "ls")
@@ -28,6 +31,7 @@ char *find_path(char *command)
 	char full_path[1024];
 	char *result;
 	size_t path_len;
+
 	path_value = get_path();
 	if (path_value == NULL)
 		return (NULL);
