@@ -1,25 +1,32 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-
 #define MAX_ARGS 64
-/* Standard C Libraries for I/O, memory, and strings */
+
+/* Standard C Libraries */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-/* UNIX System Calls for process management */
+/* UNIX System Calls */
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 
-/* Function prototypes */
 extern char **environ;
+
+/* Helpers / Parsing */
 int tokenize_line(char *line, char *args[]);
+int execute_command(char *cmd_path, char *args[], char **av);
+
+/* Path operations */
 char *get_path(void);
 char *find_path(char *command);
 char *resolve_command(char *command);
-int handle_builtin(char *args[], char *line, int *exit_status);
+
+/* Built-in management */
 int print_env(void);
+int handle_builtin(char *args[], char *line, int *exit_status);
 
 #endif /* MAIN_H */
+
