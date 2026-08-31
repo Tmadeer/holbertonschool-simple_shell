@@ -1,1 +1,25 @@
-## man_1_simple_shell(1)
+.TH HSH 1 "31/08/2026" "1.0" "Simple Shell Manual"
+.SH NAME
+hsh \- simple UNIX command line interpreter
+.SH SYNOPSIS
+.B hsh
+.SH DESCRIPTION
+hsh is a simple command line interpreter for Linux, providing functionality similar to cmd on Windows or bash on Linux. It reads commands from standard input and executes them.
+.PP
+hsh supports:
+.IP \(bu
+Executing commands directly using their full path, for example
+.B /bin/ls
+.IP \(bu
+Searching the PATH environment variable to locate commands automatically, for example
+.B ls
+.IP \(bu
+Dynamically retrieving the PATH from the system environment at runtime, ensuring compatibility across different systems
+.IP \(bu
+The built-in command
+.B exit
+.IP \(bu
+The built-in command
+.B env
+.SH AUTHOR
+Written by Tumadhir Hani Fattah and Abdulrahman Saleh Alduqail.
